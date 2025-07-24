@@ -7,7 +7,7 @@ html-clean==0.0.4
 lxml==6.0.0
 maturin==1.8.6
 #Commented because of the termux install
-#pyease-grpc==1.7.1
+pyease-grpc>=1.6.0
 python-dotenv==1.1.1
 beautifulsoup4==4.13.4
 requests==2.32.4
