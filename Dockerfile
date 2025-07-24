@@ -1,7 +1,7 @@
 ##
 # Setup Runner
 ##
-FROM python:3.10-slim-bookworm AS runner
+FROM python:3.13-slim-bookworm AS runner
 
 # Install general dependencies
 RUN apt-get update -yq \

@@ -171,16 +171,33 @@ $ docker run -v ~/Lightnovels:/home/appuser/app/Lightnovels -it lncrawl
 
 📱 Using Termux, you can run this app in your android phones too. Follow this instructions:
 
-- Install [Termux](https://github.com/termux/termux-app/releases/) from github.
-- Open the app and run these commands one by one:
-  - `termux-change-repo && pkg upgrade -y && termux-setup-storage` run to update repo to local and setup storage
-  - `pkg upgrade -y && pkg install python-grpcio python-lxml python-pillow -y` run to setup depends
-  - `CFLAGS="-Wno-error=incompatible-function-pointer-types" pip install -U setuptools lightnovel-crawler` run to install
+  *** Attention ***   
+I had somme issues with the pkg install python-grpcio python-lxml python-pillow -y command so I had to take them out the dependancies are met through other packages   
+
+- Install [Termux](https://github.com/termux/termux-app/releases/) from github. => I took the 0.118.3 version
+- Open the app and run these commands one by one:   
+    - `termux-setup-storage`   
+- the sh file from here : [termux_setup.sh](https://github.com/thibaud200/lightnovel-crawler/blob/dependancies/termux_setup.sh)  <<< should run all the commands line for installation
+    => put it in the download directory  
+  the file should be in the directory : ~/storage/download. To access it and use it here are the commands you need   
+    - `cp ~/storage/dowload/termux_setup.sh .`   
+    - `chmod +x ~/termux_setup.sh`   
+    - `./termux_setup.sh`     
+
+or you can do it manualy with the commands below :   
+- Open the app and run these commands one by one:   
+  - `termux-setup-storage`   
+  - `termux-change-repo && pkg upgrade -y && termux-setup-storage` run to update repo to local and setup storage   
+  - `pkg install python git rust clang make autoconf automake libtool pkg-config patch binutils libuv postgresql libxml2 libxslt libjpeg-turbo zlib libtiff freetype libwebp openjpeg -y`
+  - `pip install maturin==1.8.6`
+  - `pip install --upgrade pip setuptools wheel`
+  - `CFLAGS=\"-Wno-error=incompatible-function-pointer-types\" pip install .` run to install
   - `cd ~/storage/downloads` set storage location to downloads folder
   - `lncrawl` run the crawler
 - You can navigate up using <kbd>Vol UP</kbd> + <kbd>W</kbd> and down using <kbd>Vol UP</kbd> + <kbd>S</kbd>.
 
 When there is a new update available, you can install it just by running `pip install -U lightnovel-crawler`. You will not have to run all the above commands again.
+
 
 **PyDroid**
 
