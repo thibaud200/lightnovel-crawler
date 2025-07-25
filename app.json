@@ -14,44 +14,36 @@
   "env": {
     "LOG_LEVEL": {
       "description": "Available levels: NOTSET, WARN, INFO, DEBUG, FATAL, ERROR",
-      "value": "INFO",
-      "required": true
+      "value": "INFO"
     },
     "BOT": {
       "description": "Available: console, discord, telegram",
-      "value": "discord",
-      "required": true
+      "value": "discord"
     },
     "TELEGRAM_TOKEN": {
-      "description": "Telegram token, only required if BOT is set to telegram",
-      "required": false
+      "description": "Telegram token, only required if BOT is set to telegram"
     },
     "DISCORD_TOKEN": {
-      "description": "Discord token, only required if BOT is set to discord",
-      "required": false
+      "description": "Discord token, only required if BOT is set to discord"
     },
     "DISCORD_SIGNAL_CHAR": {
       "description": "Discord command prefix, only required if BOT is set to discord",
-      "required": true
+      "value": "!"
     },
     "DISCORD_DISABLE_SEARCH": {
       "description": "Disable searching in discord bot",
-      "required": false,
       "value": "false"
     },
     "CLOUD_DRIVE": {
       "description": "Available: GOFILE, GOOGLE_DRIVE, ANONFILES",
-      "required": false,
       "value": "ANONFILES"
     },
     "GOOGLE_DRIVE_CREDENTIAL_FILE": {
       "description": "Google Drive service credentials to use",
-      "required": false,
       "value": "mycreds.txt"
     },
     "GOOGLE_DRIVE_FOLDER_ID": {
-      "description": "Google Drive folder id to upload",
-      "required": false
+      "description": "Google Drive folder id to upload"
     }
   },
   "buildpacks": [
