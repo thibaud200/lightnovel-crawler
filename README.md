@@ -171,10 +171,7 @@ $ docker run -v ~/Lightnovels:/home/appuser/app/Lightnovels -it lncrawl
 
 📱 Using Termux, you can run this app in your android phones too. Follow this instructions:
 
-  *** Attention ***   
-I had somme issues with the pkg install python-grpcio python-lxml python-pillow -y command so I had to take them out the dependancies are met through other packages   
-
-- Install [Termux](https://github.com/termux/termux-app/releases/) from github. => I took the 0.118.3 version
+- Install [Termux](https://github.com/termux/termux-app/releases/) from github. => tested on the 0.118.3 version
 - Open the app and run these commands one by one:   
     - `termux-setup-storage`   
 - the sh file from here : [termux_setup.sh](https://github.com/thibaud200/lightnovel-crawler/blob/dependancies/termux_setup.sh)  <<< should run all the commands line for installation
@@ -190,6 +187,7 @@ or you can do it manualy with the commands below :
   - `termux-change-repo && pkg upgrade -y && termux-setup-storage` run to update repo to local and setup storage   
   - `pkg install python git rust clang make autoconf automake libtool pkg-config patch binutils libuv postgresql libxml2 libxslt libjpeg-turbo zlib libtiff freetype libwebp openjpeg -y`
   - `pip install maturin==1.8.6`
+  - `pkg install python-grpcio -y`
   - `pip install --upgrade pip setuptools wheel`
   - `CFLAGS=\"-Wno-error=incompatible-function-pointer-types\" pip install .` run to install
   - `cd ~/storage/downloads` set storage location to downloads folder
@@ -242,7 +240,7 @@ $ git clone https://github.com/dipu-bd/lightnovel-crawler
 $ pip install -r requirements.txt
 ```
 
-- Run the program (use python v3.8 or higher):
+- Run the program (use python v3.11 or higher : ideally v3.12):
 
 ```bash
 $ python lncrawl
