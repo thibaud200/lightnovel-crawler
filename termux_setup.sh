@@ -10,6 +10,7 @@ pkg update && pkg upgrade -y || { echo "Error: pkg update/upgrade failed."; exit
 # 2. Installing essential build dependencies via pkg
 echo "Installing required build tools and libraries via pkg..."
 pkg install python git rust clang make autoconf automake libtool pkg-config patch binutils libuv postgresql libxml2 libxslt libjpeg-turbo zlib libtiff freetype libwebp openjpeg -y || { echo "Error: System package installation failed."; exit 1; }
+pkg install python-grpcio -y
 
 # 3. Installing maturin via pip
 echo "Installing maturin via pip..."
