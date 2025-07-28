@@ -3,6 +3,7 @@ import sys
 import subprocess
 import shutil
 from pathlib import Path
+import platform
 
 # --- Project Configuration ---
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -189,13 +190,10 @@ def get_option_status(option_num):
                 return "available"
     # --- Logic for Option 14 (Activate Venv) ---
     elif option_num == 14:
-        # Check if the .venv directory exists on disk, not if orchestrator is in venv
-        if not (PROJECT_ROOT / ".venv").is_dir():
-            return "disabled_no_venv_dir" # Custom message if .venv directory not found
-        else:
-            # Command to display activation is always available if .venv exists.
-            # No need to check Python version compatibility for just displaying a string.
-            return "available"
+        summary, has_venv = get_venv_summary_string()
+        if not has_venv:
+            return "disabled_no_venv_dir"
+        return f"available [{summary}]"
 
     # --- Logic for all other Python-dependent options (2,3,4,5,6,7,8,9,11,12,13) ---
     if not IS_IN_VENV:
@@ -318,6 +316,84 @@ def display_menu():
     print("0. Exit")
     print("--------------------------------------------------")
 
+def lister_venvs_avec_version(racine="."):
+    suffixe_python = "Scripts\\python.exe" if platform.system() == "Windows" else "bin/python"
+    venvs = []
+
+    for dossier in os.listdir(racine):
+        chemin = os.path.join(racine, dossier)
+        exe_python = os.path.join(chemin, suffixe_python)
+        pyvenv = os.path.join(chemin, "pyvenv.cfg")
+
+        if os.path.isfile(pyvenv) and os.path.isfile(exe_python):
+            try:
+                version = subprocess.check_output([exe_python, "--version"], stderr=subprocess.STDOUT)
+                version = version.decode().strip().split()[-1]  # Ex: "Python 3.12.3" -> "3.12.3"
+                venvs.append((dossier, chemin, version))
+            except Exception as e:
+                print(f"Impossible de lire la version pour {dossier} : {e}")
+    return venvs
+
+def relancer_dans_env_virtuel(chemin_venv):
+    """
+    Relance le script orchestrator.py dans un nouveau terminal avec l'environnement virtuel spécifié activé.
+    Cette fonction QUITTERA le processus actuel.
+    """
+    import subprocess, os, sys
+
+    script_path = os.path.abspath(__file__)
+    chemin_env_absolu = os.path.abspath(chemin_venv) # Correction: définir chemin_env_absolu ici
+
+    if os.name == "nt": # Windows
+        activate_path = os.path.join(chemin_env_absolu, "Scripts", "activate.bat")
+        print(chemin_env_absolu)
+        print(activate_path)
+        cmd = f'start "" cmd /k "call "{activate_path}" && python \\"{script_path}\\""'
+        print(f"Lancement d'une nouvelle fenêtre Windows avec l'environnement activé: {cmd}")
+    else: # Linux, macOS
+        activate_path = os.path.join(chemin_env_absolu, "bin", "activate")
+        cmd = f'gnome-terminal -- bash -c "source "{activate_path}" && python \\"{script_path}\\"; exec bash"'
+        print(f"Lancement d'un nouveau terminal avec l'environnement activé: {cmd}")
+
+    subprocess.Popen(cmd, shell=True)
+    sys.exit()
+
+def menu_choix_env():
+    venvs = lister_venvs_avec_version()
+    if not venvs:
+        print("Aucun environnement virtuel détecté.")
+        return
+
+    print("\nEnvironnements virtuels détectés :")
+    for i, (nom, _, version) in enumerate(venvs, 1):
+        print(f"{i}. {nom} (Python {version})")
+
+    choix = input("Sélectionne un environnement à utiliser (numéro) : ")
+    if choix.isdigit():
+        index = int(choix) - 1
+        if 0 <= index < len(venvs):
+            _, chemin, _ = venvs[index]
+            relancer_dans_env_virtuel(chemin)
+    print("Choix invalide.")
+
+def get_venv_summary_string(racine="."):
+    """
+    Retourne (summary_string, has_venv) :
+    - summary_string = chaîne comme ".venv (3.10), venv312 (3.12.5)"
+    - has_venv = True si au moins un environnement détecté
+    """
+    venvs = lister_venvs_avec_version(racine)
+
+    if not venvs:
+        return ("(aucun environnement détecté)", False)
+
+    # Trie .venv en premier
+    venvs.sort(key=lambda v: 0 if v[0] == ".venv" else 1)
+
+    # Crée le résumé
+    resume = ", ".join(f"{nom} (Python {version})" for nom, _, version in venvs)
+    return (resume, True)
+
 
 def main():
     print("This orchestrator is designed for desktop environments (Linux, macOS, Windows with make).")
@@ -332,6 +408,7 @@ def main():
 
     while True:
         display_menu() # This function now displays only the menu and venv info if needed
+        lister_venvs_avec_version()
         choice = input("Enter your choice: ")
 
         if choice == '0':
@@ -547,13 +624,14 @@ def main():
 
         elif choice_num == 14: # Display Virtual Environment Activation Command
             # This option is handled entirely in Python without calling make
-            print("\n*** To activate the virtual environment, execute one of the following commands in your terminal: ***")
+            print("\n*** Pour activer l'environnement virtuel, exécutez l'une des commandes suivantes dans votre terminal : ***")
             if sys.platform.startswith('win'):
-                print(f"For CMD: '{PROJECT_ROOT / '.venv' / 'Scripts' / 'activate.bat'}'")
-                print(f"For PowerShell: '{PROJECT_ROOT / '.venv' / 'Scripts' / 'Activate.ps1'}'")
+                print(f"Pour CMD: '{PROJECT_ROOT / '.venv' / 'Scripts' / 'activate.bat'}'")
+                print(f"Pour PowerShell: '{PROJECT_ROOT / '.venv' / 'Scripts' / 'Activate.ps1'}'")
             else: # Linux, macOS, WSL
-                print(f"For Bash/Zsh: 'source {PROJECT_ROOT / '.venv' / 'bin' / 'activate'}'")
+                print(f"Pour Bash/Zsh: 'source {PROJECT_ROOT / '.venv' / 'bin' / 'activate'}'")
             print("**********************************************************************************")
+            menu_choix_env()
             input("\nAppuyez sur Entrée pour continuer...")
 
         else:
